@@ -1,0 +1,59 @@
+{
+    "name": "aaix/laravel-stack-env",
+    "description": "A committed env layer for Laravel: .env.stack holds the defaults a project's stack dictates, the developer's .env only overrides them.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "env",
+        "dotenv",
+        "configuration",
+        "docker"
+    ],
+    "authors": [
+        {
+            "name": "Jonas Gnioui",
+            "email": "jonaaix@icloud.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.3",
+        "laravel/framework": "^12.0|^13.0",
+        "vlucas/phpdotenv": "^5.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.0|^11.0",
+        "pestphp/pest": "^3.7|^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aaix\\LaravelStackEnv\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Aaix\\LaravelStackEnv\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "./vendor/bin/pest"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aaix\\LaravelStackEnv\\StackEnvServiceProvider"
+            ]
+        },
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
