@@ -17,4 +17,9 @@ class BootstrapPatchFailed extends RuntimeException
     {
         return new self("bootstrap/app.php contains \"{$anchor}\" more than once.");
     }
+
+    public static function unparsableResult(string $reason): self
+    {
+        return new self("The patched bootstrap/app.php would not parse: {$reason}.");
+    }
 }

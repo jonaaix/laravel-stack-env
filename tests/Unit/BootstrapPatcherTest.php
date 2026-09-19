@@ -49,6 +49,10 @@ it('refuses a file that matches neither skeleton', function () {
     (new BootstrapPatcher)->patch(skeletonFixture('bootstrap-app-unpatchable.php.stub'));
 })->throws(BootstrapPatchFailed::class);
 
+it('refuses a result that would not parse', function () {
+    (new BootstrapPatcher)->patch('<?php'.PHP_EOL.'$app = new stdClass('.PHP_EOL.'return $app;'.PHP_EOL);
+})->throws(BootstrapPatchFailed::class, 'would not parse');
+
 it('refuses a file whose anchor appears more than once', function () {
     $contents = str_replace(
         '})->create();',

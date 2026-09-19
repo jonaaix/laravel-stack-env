@@ -7,6 +7,7 @@ namespace Aaix\LaravelStackEnv\Support;
 use Aaix\LaravelStackEnv\Exceptions\BootstrapPatchFailed;
 use Aaix\LaravelStackEnv\LoadEnvironmentVariables as StackBootstrapper;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables as FrameworkBootstrapper;
+use ParseError;
 
 class BootstrapPatcher
 {
@@ -63,9 +64,11 @@ class BootstrapPatcher
             throw BootstrapPatchFailed::noAnchor();
         }
 
-        return substr($contents, 0, $end)
+        return $this->verified(
+            substr($contents, 0, $end)
             .PHP_EOL.PHP_EOL.$this->binding()
-            .PHP_EOL.PHP_EOL.'return $app;'.PHP_EOL;
+            .PHP_EOL.PHP_EOL.'return $app;'.PHP_EOL
+        );
     }
 
     private function patchLegacySkeleton(string $contents): string
@@ -77,9 +80,22 @@ class BootstrapPatcher
             (int) strpos($contents, self::LEGACY_ANCHOR)
         );
 
-        return substr($contents, 0, $position)
+        return $this->verified(
+            substr($contents, 0, $position)
             .$this->binding().PHP_EOL.PHP_EOL
-            .substr($contents, $position);
+            .substr($contents, $position)
+        );
+    }
+
+    private function verified(string $contents): string
+    {
+        try {
+            token_get_all($contents, TOKEN_PARSE);
+        } catch (ParseError $error) {
+            throw BootstrapPatchFailed::unparsableResult($error->getMessage());
+        }
+
+        return $contents;
     }
 
     private function skipPrecedingBlockComment(string $contents, int $position): int
