@@ -6,7 +6,7 @@
         </linearGradient>
     </defs>
     <rect width="256" height="256" rx="56" fill="#111827"/>
-    <g transform="translate(128 132)">
+    <g transform="translate(128 164)">
         <path d="M0 44 -76 0 0 -44 76 0Z" fill="#374151"/>
         <path d="M0 8 -76 -36 0 -80 76 -36Z" fill="#6b7280"/>
         <path d="M0 -28 -76 -72 0 -116 76 -72Z" fill="url(#top)"/>

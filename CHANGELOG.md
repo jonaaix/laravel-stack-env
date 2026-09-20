@@ -2,6 +2,21 @@
 
 All notable changes to `aaix/laravel-stack-env` will be documented in this file.
 
+## [1.0.3] - 2026-09-20
+
+### Fixed
+
+- The icon's three layers sat 32px above the centre of the canvas.
+
+### Changed
+
+- README cut back to what the package does and how to switch it on.
+
+### Removed
+
+- A note claiming `APP_ENV` does not belong in `.env.stack`. It was wrong: `APP_ENV` behaves like
+  every other key, and the file-selection step it referred to is equally blind to `.env`.
+
 ## [1.0.2] - 2026-09-20
 
 ### Removed
