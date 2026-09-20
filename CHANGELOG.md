@@ -2,6 +2,20 @@
 
 All notable changes to `aaix/laravel-stack-env` will be documented in this file.
 
+## [1.0.2] - 2026-09-20
+
+### Removed
+
+- `stack-env:install`, along with everything that existed only to serve it: the bootstrap patcher
+  and its exception, the service provider that registered nothing else, and the `.env.stack` stub.
+  Setting the package up is two edits, and the README spells them out — they stay visible in the
+  project's own diff instead of happening behind it.
+- `orchestra/testbench` from the dev dependencies; nothing boots an application any more.
+
+### Changed
+
+- Requires Laravel 13 and PHP 8.4. The CI matrix drops Laravel 12 and PHP 8.3 accordingly.
+
 ## [1.0.1] - 2026-09-19
 
 ### Added

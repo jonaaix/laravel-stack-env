@@ -20,20 +20,52 @@ itself, the personal file shrinks to secrets.
 
 ---
 
-## Quick Start
+## Setup
 
 ```bash
 composer require aaix/laravel-stack-env
-php artisan stack-env:install
 ```
 
-That is the whole setup. The command registers the loader in `bootstrap/app.php`, keeps the
-previous file as `bootstrap/app.php.bak`, and drops a commented, value-free `.env.stack` in the
-project root. Put the values your stack dictates in there, commit the file, and remove those
-keys from `.env.example`.
+Then two edits, both yours to make.
 
-The package ships the loader only. It contains no env values and no `.env.stack` of its own —
-which keys a project needs is the project's decision.
+**1. Register the loader in `bootstrap/app.php`.** It has to be a container binding on the
+finished application: a service provider is registered several bootstrappers after the
+environment is read, and `withSingletons()` on the application builder is just as late.
+
+On the slim skeleton the file returns the builder expression directly, so assign it first:
+
+```php
+$app = Application::configure(basePath: dirname(__DIR__))
+    // ...
+    ->create();
+
+$app->singleton(
+    \Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::class,
+    \Aaix\LaravelStackEnv\LoadEnvironmentVariables::class,
+);
+
+return $app;
+```
+
+On the classic skeleton the `$app` variable already exists — put the same `singleton()` call next
+to the other bindings, above `return $app;`.
+
+**2. Create `.env.stack` in the project root and commit it.** The package ships no values and no
+file of its own; which keys a project needs is the project's decision.
+
+```dotenv
+# Stack environment defaults
+#
+# Committed. Applies to everyone working on this project, and is overridden by
+# each developer's own .env. Keys defined here do not belong in .env.example.
+
+DB_CONNECTION=mysql
+DB_HOST=mysql
+REDIS_HOST=redis
+```
+
+Check that `.gitignore` does not swallow the file — a `.env*` pattern would, and the layer only
+reaches your colleagues and CI once the file is committed.
 
 ## Precedence
 
@@ -68,9 +100,9 @@ holds: call `env()` in `config/*.php` and nowhere else.
 (`.env.production` and friends) before any env file is read, so it only ever sees `APP_ENV` from
 a real environment variable. That is unchanged framework behaviour — the same is true of `.env`.
 
-**Both skeletons are supported.** `stack-env:install` recognises the Laravel 11+ `bootstrap/app.php`
-and the legacy one. If it recognises neither, it changes nothing and prints the binding to add by
-hand.
+**Nothing is generated and nothing is patched.** The package ships the loader and nothing else —
+no install command, no file that rewrites `bootstrap/app.php` behind your back. The two edits
+above are the whole integration, and they stay visible in your own diff.
 
 ## How it works
 

@@ -7,7 +7,6 @@ Checked against the versions actually installed, not against documentation.
 | PHP | 8.5.7 |
 | laravel/framework | v13.32.0 |
 | vlucas/phpdotenv | v5.7.0 |
-| orchestra/testbench | ^10.0 \| ^11.0 |
 | PHPUnit | 12.5.33 |
 
 ## V1 — `LoadEnvironmentVariables::createDotenv()`
@@ -34,8 +33,8 @@ Reproduced: after `Application::configure(...)->withSingletons([...])->create()`
 `$app->bound(LoadEnvironmentVariables::class)` is `false` and `make()` still returns the
 framework class.
 
-The binding has to be made on the finished container instead, which is what `InstallCmd`
-patches in:
+The binding has to be made on the finished container instead, which is the edit the README
+asks for:
 
 ```php
 $app = Application::configure(...)->...->create();
@@ -79,33 +78,33 @@ Pest reports it, so the precedence test silences `E_WARNING` around the load.
 
 The fresh skeleton ends on `})->create();` and holds no `$app` variable, as assumed. The IMS
 application (`/app`) however still runs the **legacy** skeleton: `$app = new Application(...)`,
-a few `$app->singleton(...)` calls, `return $app;`. `BootstrapPatcher` therefore handles both
-shapes and refuses anything else instead of guessing. In the legacy file the binding is placed
-above the comment block that precedes `return $app;`.
+a few `$app->singleton(...)` calls, `return $app;`. The README documents the edit for both
+shapes; on the legacy one the binding simply joins the existing `singleton()` calls.
 
 ## V6 — `.gitignore`
 
 Confirmed for both the fresh skeleton (`.env`, `.env.backup`, `.env.production`) and `/app`
 (`.env`). Neither carries an `.env.*` glob, so the stack file is committed by default. The
-install command still checks and warns, honouring negation patterns.
+README still tells the reader to check, because a project-specific `.env*` pattern would
+silently defeat the whole layer.
 
 ## Naming
 
 Vendor `aaix` and the `Aaix\Laravel*` namespace follow the sibling packages
-(`aaix/laravel-islands` → `Aaix\LaravelIslands`, commands under `src/Console` with the `Cmd`
-suffix). Hence `aaix/laravel-stack-env`, `Aaix\LaravelStackEnv`, `InstallCmd`.
+(`aaix/laravel-islands` → `Aaix\LaravelIslands`). Hence `aaix/laravel-stack-env` and
+`Aaix\LaravelStackEnv`.
 
 `laravel/framework` is required rather than `illuminate/support`, because the bootstrapper
 extends a class from `Illuminate\Foundation`, which only ships in the full framework.
 
 ## End-to-end result
 
-Fresh Laravel 13 project, package linked as a path repository:
+Fresh Laravel 13 project, package linked as a path repository, integrated by following the
+README by hand:
 
 | Case | Result |
 | --- | --- |
 | `.env.stack` sets `DB_CONNECTION=mysql`, key absent from `.env` | `mysql` |
 | plus `DB_CONNECTION=sqlite` in `.env` | `sqlite` |
 | plus `DB_CONNECTION=pgsql` in the process environment | `pgsql` |
-| second `stack-env:install` | both files unchanged |
 | after `config:cache` | `mysql` |

@@ -17,12 +17,11 @@
         }
     ],
     "require": {
-        "php": ">=8.3",
-        "laravel/framework": "^12.0|^13.0",
+        "php": ">=8.4",
+        "laravel/framework": "^13.0",
         "vlucas/phpdotenv": "^5.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^10.0|^11.0",
         "pestphp/pest": "^3.7|^4.0"
     },
     "autoload": {
@@ -45,11 +44,6 @@
         }
     },
     "extra": {
-        "laravel": {
-            "providers": [
-                "Aaix\\LaravelStackEnv\\StackEnvServiceProvider"
-            ]
-        },
         "branch-alias": {
             "dev-main": "1.x-dev"
         }
