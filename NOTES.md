@@ -88,6 +88,27 @@ Confirmed for both the fresh skeleton (`.env`, `.env.backup`, `.env.production`)
 README still tells the reader to check, because a project-specific `.env*` pattern would
 silently defeat the whole layer.
 
+## V7 — `php artisan test` — **deviation, found in the first real project**
+
+Collision's `TestCommand` starts phpunit as a child process that inherits the artisan process's
+environment. Before it does, `clearEnv()` clears the keys of `.env` from the repository — and
+only those, read by name from that one file. Every key the stack file set therefore reaches
+phpunit as a real environment variable in `$_SERVER`.
+
+phpunit's `<env>` sets `$_ENV` and `putenv()`, even with `force="true"`, but not `$_SERVER`, and
+Laravel's repository reads `$_SERVER` first. So `DB_DATABASE` from `.env.stack` outranked the
+test database in `phpunit.xml`: the suite ran against the development database, and
+`RefreshDatabase` wiped it. Running `vendor/bin/phpunit` directly was unaffected.
+
+The bootstrapper now remembers which keys the stack file actually set — `safeLoad()` returns
+only those, so a real environment variable is never among them — and clears exactly those when
+`CommandStarting` fires for `test`. The event dispatcher is bound in the application
+constructor, so the listener can be registered from the bootstrapper itself. With a config
+cache the stack file is never read, and nothing is registered.
+
+Reproduced in the project with the `<server>` workaround removed: the released version reports
+the development database inside a test, the fixed one the test database.
+
 ## Naming
 
 Vendor `aaix` and the `Aaix\Laravel*` namespace follow the sibling packages

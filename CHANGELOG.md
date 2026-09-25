@@ -2,6 +2,16 @@
 
 All notable changes to `aaix/laravel-stack-env` will be documented in this file.
 
+## [1.0.4] - 2026-09-25
+
+### Fixed
+
+- `php artisan test` ran the suite against the development database. The test command passes its
+  environment on to phpunit and clears only the keys of `.env`, so a value from `.env.stack`
+  outranked the one in `phpunit.xml` — with `RefreshDatabase`, every run wiped the development
+  database. The values the stack file set are now taken back before the test command starts
+  phpunit; real environment variables stay untouched.
+
 ## [1.0.3] - 2026-09-20
 
 ### Fixed
